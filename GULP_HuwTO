@@ -1,0 +1,45 @@
+
+Coprimere i file html js e css con gulp 
+
+
+run:> npm install --global gulp-cli            //INSTALL GULP 
+
+run:> npm install "dependency"                //Install the gulp package in your devDependencies
+ 
+run:> gulp                                    //build html file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//INSTALL NODE.JS   npm itall too
+
+//OPEN NODE.JS COMMAND PROMPT

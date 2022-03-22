@@ -1,0 +1,178 @@
+<!doctype html>
+
+<html lang="it">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TITOLO PAGINA</title>
+    <meta name="author" content="ozziii" />
+    <meta name="description" content="Dashboard for OzEsp Firmware" />
+
+    <!-- build:css style.css -->
+    <link rel="stylesheet" href="base.css" />
+    <!-- endbuild -->
+
+
+</head>
+
+<body>
+    <input type="checkbox" id="menu_toggle" hidden>
+    <div id="overlay_menu_toggle" onclick="menu_hide_me()"> </div>
+    <aside id="side_menu">
+        <h1>Oz Esp</h1>
+        <ul>
+            <li>
+                <div class="menu_button" id="state_menu_button" onclick="menuSwitchPage('state_article')">State</div>
+            <li>
+                <div class="menu_button" id="log_menu_button" onclick="menuSwitchPage('log_article')">Logging</div>
+            <li>
+                <div class="menu_button" id="parameter_menu_button" onclick="menuSwitchPage('parameter_article')">
+                    Parameter</div>
+            <li>
+                <div class="menu_button" id="plugin_menu_button" onclick="menuSwitchPage('plugin_article')">Plug-In
+                </div>
+            <li>
+                <div class="menu_button" id="setting_menu_button" onclick="menuSwitchPage('setting_article')">Settings
+                </div>
+            <li>
+                <div class="menu_button" id="update_menu_button" onclick="menuSwitchPage('update_article')">Update</div>
+        </ul>
+        </nav>
+    </aside>
+    <header>
+        <h1>
+            <label id="label_menu_toggle" for="menu_toggle">&#9776</label>
+            <div id="header_page_title"></div>
+        </h1>
+    </header>
+    <section id="page">
+        <article class="main_article" id="state_article">
+            <div id="state_container"><div class="lds-ring-container" ><div class="lds-ring"><div></div><div></div><div></div><div></div></div><h1>Loading....</h1></div></div>
+        </article>
+        <article class="main_article" id="log_article" hidden>
+            <div class="log_separator"></div>
+            <div id="log_windwos" onclick="refresh_log_article()">
+                <div id="log_windwos_head">
+                    <h1>Logging</h1>
+                </div>
+                <div id="log_container"></div>
+            </div>
+            <div class="log_separator"></div>
+        </article>
+        <article class="main_article" id="parameter_article" hidden>
+            <div id="parameter_header">
+                <h1>Base paramenter</h1>
+                <button class="oz-button" onclick="saveParameter()">Save Parameter</button>
+            </div>
+            <div id="parameter_container"></div>
+        </article>
+        <article class="main_article" id="plugin_article" hidden>
+            <div id="plugin_list_container">
+            </div>
+            <div id="plugin_setting_container"></div>
+            <button class="oz-button" onclick="sendPlugin()">Save Plugin</button>
+        </article>
+        <article class="main_article" id="setting_article" hidden>
+            <div>
+                <h1>Riavvia dispositivo</h1><button class="oz-button" onclick="rebootESP()">Reboot</button>
+            </div>
+            <div>
+                <h1>Unlock Device </h1><button class="oz-button" onclick="unlockESP()">Unlock</button>
+            </div>
+            <div>
+                <h1>Download Database</h1>
+                <a id="setting_download_link" href="/getdb" download hidden></a>
+                <button class="oz-button" onclick="downloadDatabase()">Download</button>
+            </div>
+            <div>
+                <h1>Carica Database</h1>
+                <div><input type="file" name="upload_db_file" id="upload_db_file" accept=".json"></div>
+                <div><button class="oz-button" onclick="uploadDatabase()">Upload</button></div>
+            </div>
+            <div>
+                <h1>Clear Database</h1><button class="oz-button" onclick="removeDatabase()">Clear</button>
+            </div>
+        </article>
+        <article class="main_article" id="update_article" hidden>
+            <h1>Ota Update</h1>
+            <form id="upload_form" enctype="multipart/form-data" method="post">
+                <div class="upload_body_button">
+                    <div class="cointainer_button"><input type="file" name="upload_file" id="upload_file" accept=".bin">
+                    </div>
+                    <div class="cointainer_button"><button class="oz-button" onclick="uploadFile()">Upload File</button>
+                    </div>
+                </div>
+                <progress id="upload_progressBar" value="0" max="100" ></progress>
+                <h3 id="upload_status"></h3>
+                <p id="upload_loaded_n_total"></p>
+            </form>
+        </article>
+    </section>
+    <footer>
+        <small><a href="https://github.com/ozziii" >OzEsp firmware by ozziii</a></small>
+    </footer>
+</body>
+
+<!-- { 'states' : [{key: "init", value: "0"},{key: "init", value: "0"}.....] }    -->
+<script id="state_template" type="text/x-handlebars-template">
+    {{#states}}
+    <div class="state_item" >
+        <div class="caption">{{key}}</div>
+        <div class="label">{{value}}</div>
+    </div>
+    {{/states}}
+</script>
+
+
+<script id="log_template" type="text/x-handlebars-template">
+    {{#debug}}
+    <div class="log_row">{{{row}}}</div>
+    {{/debug}}
+</script>
+
+
+<!-- { setting: [{key: "init", value: "0"}, {key: "espname", value: "living" }  -->
+<script id="parameter_template" type="text/x-handlebars-template">
+    {{#parameter}}
+    <div class="parameter_item" >
+        <button class="parameter_restore"  id="parameter_restore_{{key}}" onclick="parameterRestore('{{key}}')"  hidden >&#8635;</button>
+        <div class="parameter_restore_sub" id="parameter_restore_sub_{{key}}" ></div>
+        <div class="parameter_caption" >{{key}}</div>
+        <div class="parameter_text_container" >
+            <input class="parameter_text" type="text" id="parameter_value_{{key}}" data-name="{{key}}" value="{{value}}"  onchange="parameterValueChange('{{key}}')" >
+        </div>
+        <input type="hidden" id="parameter_hidden_{{key}}" value="{{value}}" >
+    </div>
+    {{/parameter}}
+</script>
+
+<!-- { setting: [{key: "init", value: "0"}, {key: "espname", value: "living" }  -->
+<script id="plugin_list_template" type="text/x-handlebars-template">
+    {{#plugin}}
+    <div class="plugin_list_item" >
+        <button class="oz-button" onclick="addPlugin('{{key}}',this)">{{name}}</button>
+        <input type="hidden" id="plugin_hidden_{{key}}" value="{{value}}" >
+    </div>
+    {{/plugin}}
+</script>
+
+<!-- { psetting: [{key: "init", value: "{'sasa':'sdsd'}"}, {key: "espname", value: "{'sasa':'sdsd'}" }  -->
+<script id="plugin_setting_template" type="text/x-handlebars-template">
+    {{#psetting}}
+    <div class="plugin_setting_item" >
+        <div class="plugin_setting_label">{{name}}</div>
+        <button onclick="removePlugin(this)">&#10060;</button>
+        <textarea class="plugin_setting_text_area" oninput="auto_grow(this)" >{{value}}</textarea>   
+    </div>
+    {{/psetting}}
+</script>
+
+<!-- build:js script.js -->
+<script src="mustache.js"></script>
+<script src="base.js"></script>
+<!-- endbuild -->
+
+</html>

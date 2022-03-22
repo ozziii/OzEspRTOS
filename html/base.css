@@ -1,0 +1,634 @@
+/* MAIN VARIABLE */
+
+:root{
+    --asaid-fixed-width: 200px;
+    --asaid-width: var(--asaid-fixed-width);
+
+    --header-heigth: 10vh;
+    --menu-padding-left: 2vh;
+    --border-separator: 1px solid rgba(0,0,0,0.12);
+
+
+    --input-text-botton-padding: 0;
+
+
+    --parameter-cell-display: table-cell;
+
+    --parameter-upload-paddin-left: 30px
+}
+
+/* MAIN VARIABLE */
+
+
+
+
+
+/* LOADER  */
+
+.lds-ring-container{
+    width: 100%;
+    height: 300px;
+    text-align: center;
+    padding-top: 180px;
+    display: block;
+}
+
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid rgb(22, 22, 22);
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: rgb(39, 39, 39) transparent transparent transparent;
+  }
+  .lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+  }
+  .lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+  .lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+  }
+  @keyframes lds-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+
+
+
+
+/* LOADER  */
+
+
+
+
+
+
+
+/* GLOBAL CSS */
+
+body{
+    font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.04);
+    margin: 0px;
+    position: relative;
+    min-height: 100vh;
+}
+
+input[type=text]{
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.397);
+    padding-bottom: 2px;
+    width: 100%;
+}
+
+input[type=text]:focus{
+    outline: none;
+    border-bottom: 2px solid #03a9f4;
+    padding-bottom: 1px;
+}
+
+.oz-button{
+    background-color: #03a9f4;
+    color: #ffffff;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    border: none;
+    margin: 5px;
+    height: 33px;
+}
+
+.oz-button:hover {
+    background-color: #03f4e8;
+}
+
+input[type=file]{
+    border: none;
+    padding: 0px;
+    border-radius: 4px;
+    margin: 5px;
+    height: 35px;
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    z-index: 1;
+}
+  
+input[type=file]::file-selector-button {
+    background-color: #03a9f4;
+    color: #ffffff;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 4px;
+    border: none;
+    height: 35px;
+    z-index: 2;
+}
+
+  
+input[type=file]::file-selector-button:hover {
+    background-color: #03f4e8;
+}
+
+
+/* GLOBAL CSS */
+
+
+
+
+
+
+
+
+
+/* MENU CSS */
+
+#side_menu{
+    display: block;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: var(--asaid-fixed-width);
+    visibility: var(--asaid-visibility);
+    background-color: #ffffff;
+    border-right: 1px solid rgba(0,0,0,0.12);
+    z-index: 10;
+}
+
+
+#side_menu > h1 {
+    padding-left: var(--menu-padding-left);
+    height: var(--header-heigth);
+    margin: 0px;
+    font-size: xxx-large;
+    line-height: var(--header-heigth); /* <-- adjust this */
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    border-top: 1px solid rgba(0,0,0,0.12);
+}
+
+
+#side_menu > ul{
+    padding-inline-start: 3px;
+}
+
+#side_menu > ul > li{
+    display: block;
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 1vh;
+    padding-left: var(--menu-padding-left);
+    color: #212121;
+    font-size: 30px;
+    margin-left: 7px;
+    margin-right: 7px;
+    font-weight: bold;
+}
+
+#side_menu > ul > li:hover{
+    color: #03a9f4;
+    background-color: #e0f5fe;
+}
+
+#overlay_menu_toggle{
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    display: none;
+}
+
+/*  END MENU CSS */
+
+
+
+
+
+
+/* HEADER CSS */
+
+header{
+    position: sticky;
+    top: 0px;
+    padding-left: var(--asaid-width);
+    border: solid 1px rgba(0,0,0,0);
+    background-color: #03a9f4;
+    color: #ffffff;
+    height: var(--header-heigth);
+}
+
+header > h1{
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+#label_menu_toggle{
+    margin-left: 15px;
+    height: var(--header-heigth);
+    display: none;
+    align-items: center;
+}
+
+#header_page_title{
+    margin-left: 40px;
+    height: var(--header-heigth);
+    display: inline-flex;
+    align-items: center;
+}
+
+/* END  HEADER CSS */
+
+
+
+
+
+/* GENERAL PAGE  CSS */
+
+#page{
+    padding-left: var(--asaid-width);
+    padding-bottom: 2.5rem; 
+}
+
+
+.main_article{
+    margin: 30px;
+    background: var( --ha-card-background, var(--card-background-color, white) );
+    border-radius: var(--ha-card-border-radius, 4px);
+    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+}
+
+/* GENERAL PAGE  CSS */
+
+
+
+
+
+/* STATE PAGE  CSS */
+
+#state_container{
+    margin-left: 1px;
+}
+
+.state_item{
+    display: inline-block;
+    margin-left: 20px;
+    width: 80%;
+
+}
+
+.state_item > div{
+    display: inline-block;
+    margin: 1vh;
+    padding: 1vh;
+}
+
+/* STATE PAGE  CSS */
+
+
+
+
+
+
+/* PARAMETER PAGE  CSS */
+
+#parameter_header{
+    border-bottom: var(--border-separator);
+    height: 80px;
+    align-items: center;
+    display: inline-flex;
+    width: 99%;
+    justify-content: space-between;
+}
+
+
+#parameter_header > h1{
+    padding-left: 20px;
+}
+
+
+/* PARAM CONTAINER */
+
+#parameter_container{
+    width: 98%;
+    display: table;   
+    border-collapse:collapse;
+}
+
+.parameter_item{
+    display: table-row;
+    border-bottom: var(--border-separator);
+}
+
+.parameter_item > div{
+    display: var(--parameter-cell-display);
+    vertical-align: middle;
+}
+
+.parameter_restore{
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: white;
+    font-size: 20px;
+}
+
+.parameter_restore_sub{
+    width: 50px;
+    height: 50px;
+}
+
+.parameter_caption{
+    max-width: 65px;
+}   
+
+.parameter_text_edited{
+    font-weight: bold;
+}
+
+/* PARAMETER PAGE  CSS */
+
+
+
+
+/* PLUGIN PAGE  CSS */
+
+#plugin_list_container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    border-bottom: var(--border-separator);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.plugin_list_item{
+    flex-grow: 1;
+}
+
+#plugin_article > button{
+    margin-left: 15px;
+}
+
+#plugin_setting_container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.plugin_setting_item {
+    flex-grow: 1;
+    min-width: 200px;
+    min-height: 200px;
+    padding-left: 2%;
+    padding-right: 2%;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.plugin_setting_label{
+    display: inline;
+    font-size: 17px;
+}
+
+.plugin_setting_item > button{
+    float: right;
+    background-color: white;
+    border: none;
+    font-size: 20px;
+}
+
+.plugin_setting_item > textarea{
+    width: 100%;
+    height: 220px;
+    font-size: 15px;
+}
+/* PLUGIN PAGE  CSS */
+
+
+
+
+/* SETTING PAGE  CSS */
+
+#setting_article > div{
+    border-bottom: var(--border-separator);
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
+#setting_article > div > h1{
+    width: 20%;
+    padding-left: 20px;
+    min-width: 50px;
+}
+
+#setting_download_link{
+    height: 30px;
+}
+
+/* SETTING PAGE  CSS */
+
+
+
+
+
+
+/* LOG PAGE  CSS */
+
+#log_windwos{
+    margin: 20px;
+    background-color: cadetblue;
+    border: solid 4px cadetblue;
+    box-shadow: 0 0 10px #000000;
+}
+#log_windwos_head{
+    height: 20px;
+    background-color: cadetblue;
+}
+
+#log_windwos_head > h1{
+    margin: 0px;
+}
+
+#log_container{
+    background-color: black;
+}
+
+.log_separator{
+    height: 5px;
+}
+
+/* Log PAGE  CSS */
+
+
+
+
+
+
+
+
+/* OTA PAGE  CSS */
+
+#update_article > h1{
+    display: block;
+    padding-left: var(--parameter-upload-paddin-left);
+    padding-bottom: 21px;
+    padding-top: 21px;
+    border-bottom: var(--border-separator);
+}
+
+#upload_form{
+    display: block;
+    padding-left: var(--parameter-upload-paddin-left);
+    padding-bottom: 21px;
+}
+
+#upload_progressBar{
+    height: 29px;
+    margin-left: 30px;
+    margin-top: 10px;
+    width: 60%;
+    max-width: 300px;
+}
+
+.cointainer_button{
+    display: inline-block;
+}
+
+#upload_loaded_n_total{
+    display: inline-block;
+}
+
+
+/* OTA PAGE  CSS */
+
+
+/* FOOTER  CSS */
+footer{
+    margin-left: var(--asaid-width);
+    position: absolute;
+    width: calc(100vw - var(--asaid-width));
+    bottom: 0;
+    height: 2.5rem;
+    text-align: right;
+}
+
+footer > small{
+    padding-right: 30px;
+}
+/* FOOTER  CSS */
+
+
+
+
+/* DEFINITION ON SMALL DISPLAY  CSS */
+@media screen and (max-width: 950px) {
+    :root {
+        --asaid-width: 0px
+    }
+    #label_menu_toggle{
+        display: inline-flex;
+    }
+
+    #header_page_title{
+        margin-left: 15px;
+    }
+
+    #side_menu{
+        display: none;
+    }
+    #menu_toggle:checked ~ #side_menu{
+        display: block;
+    }
+
+    #menu_toggle:checked ~ #overlay_menu_toggle{
+        display: block;
+    }
+
+}
+
+@media screen and (max-width: 600px) {
+    :root {
+        --parameter-cell-display: block;
+    }
+
+    .parameter_restore{
+        width: 50px;
+        height: 50px;
+        float: right;
+    }
+    
+    .parameter_restore_sub{
+        width: 50px;
+        height: 50px;
+        float: right;
+    }
+
+    .parameter_caption{
+        margin-top: 20px;
+        margin-left: 15px;
+    }
+
+    .parameter_text_container{
+        margin-left: 15px;
+        margin-right: 15px;
+        margin-bottom: 10px;
+    }
+
+    .log_row{
+        font-size: xx-small;
+    }
+
+    #setting_article > div{
+        display: block;
+    }
+
+    #setting_article > div > h1{
+        width: 100%;
+        padding-left: 20px;
+        min-width: 50px;
+    }
+
+    #setting_article > div > button{
+        margin-left: 20px;
+    }
+
+    #setting_article > div > div{
+        margin-left: 20px;
+    }
+}
+/* DEFINITION ON BIG DISPLAY  CSS */
+
+
+
+
+
+
