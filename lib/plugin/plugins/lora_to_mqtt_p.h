@@ -59,11 +59,9 @@ public:
             {LORATOMQTT_STR_RX, "-1"}};
     }
 
-    ~lora_to_mqtt();
 
-    void execute_lora(String meggasge);
-
-    String receive();
+    void execute_lora(e32_receve_struct_t message);
+    QueueHandle_t get_queue();
 
 protected:
     void _send_response(String Topic, String Message) override;
@@ -72,9 +70,9 @@ protected:
     String _receve_topic;
     String _espname;
 
-    LoRa_E32 *_lora;
-    e32cp *_protocoll;
-    HardwareSerial *_serial;
+    e32cp _protocoll;
+    e32oz _lora;
+
     uint8_t
         _uart_number,
         _aux,

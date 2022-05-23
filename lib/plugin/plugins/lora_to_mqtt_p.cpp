@@ -1,52 +1,20 @@
 
 #include "lora_to_mqtt_p.h"
 
-
-#define LORA_PLUGIN_TASK_MEMORY   2048   
+#define LORA_PLUGIN_TASK_MEMORY 2048
 #define LORA_PLUGIN_TASK_PRIORITY 2
 
-/*
-struct lora_on_message_parameter
-{
-    lora_to_mqtt *self;
-    String message;
-};
-
-void lora_to_mqtt_message_task(void *pvParameters)
-{
-    lora_on_message_parameter *parameter = reinterpret_cast<lora_on_message_parameter *>(pvParameters);
-    OZ_LOGV("LoRa", "Arrive Message %s",parameter->message.c_str());
-    parameter->self->execute_lora(parameter->message);
-    vTaskDelete(NULL);
-}
-*/
 void lora_to_mqtt_loop_task(void *pvParameters)
 {
     OZ_LOGI("LoRa", "Loop Task is started");
     lora_to_mqtt *self = reinterpret_cast<lora_to_mqtt *>(pvParameters);
     while (true)
     {
-        String message = self->receive();
-        if (message.length() > 0)
+        e32_receve_struct_t message;
+        if (xQueueReceive(self->get_queue(), &message, portMAX_DELAY))
         {
             self->execute_lora(message);
-
-            /*
-
-            lora_on_message_parameter *parameter = new lora_on_message_parameter();
-            parameter->self = self;
-            parameter->message = meggase;
-
-            xTaskCreate(
-                lora_to_mqtt_message_task,
-                "lora_to_mqtt_message_task",
-                CORE_PLUGIN_TASK_MEMORY,
-                parameter,
-                CORE_PLUGIN_TASK_PRIORITY,
-                NULL);
-            */
         }
-        vTaskDelay(pdMS_TO_TICKS(LORA_TASK_LOOP_DELAY));
     }
     vTaskDelete(NULL);
 }
@@ -79,51 +47,56 @@ lora_to_mqtt::lora_to_mqtt(params_t init) : plugin_base(init)
 
     this->_uart_number = this->get_int_parameter(LORATOMQTT_STR_UART);
 
-    if (this->_uart_number >= UART_NUM_MAX)
+    if (this->_uart_number >= 3)
     {
         OZ_LOGW(this->name().c_str(), "Uart mnumber not valid");
         return;
     }
-
-    this->_serial = new HardwareSerial(this->_uart_number);
 
     uint8_t tx = this->get_int_parameter(LORATOMQTT_STR_TX);
     uint8_t rx = this->get_int_parameter(LORATOMQTT_STR_RX);
 
     if (GPIO_IS_VALID_GPIO(tx) && GPIO_IS_VALID_GPIO(rx))
     {
-        this->_lora = new LoRa_E32(tx, rx, this->_serial, this->_aux, this->_m0, this->_m1, UART_BPS_RATE_9600);
+        e32_pin_t pin;
+        pin.AUX_REVERSE = false;
+        pin.M0 = (gpio_num_t)this->_m0;
+        pin.M1 = (gpio_num_t)this->_m1;
+        pin.AUX = (gpio_num_t)this->_aux;
+        pin.Tx = (gpio_num_t)tx;
+        pin.Rx = (gpio_num_t)rx;
+
+        OZ_LOGI(this->name().c_str(), "Set Pin Tx:%u Rx:%u", tx, rx);
+
+        auto err = this->_lora.begin(this->_uart_number, pin);
+
+        if (err != E32_ERR_SUCCESS)
+            OZ_LOGW(this->name().c_str(), "E32 begin error");
+        return;
     }
     else
     {
-        this->_lora = new LoRa_E32(this->_serial, this->_aux, this->_m0, this->_m1, UART_BPS_RATE_9600);
+        OZ_LOGW(this->name().c_str(), "No Tx and Rx pin valid");
+        return;
     }
 
-    this->_protocoll = new e32cp();
-
+    e32cp protocoll;
     e32cp_config_t config;
     config.address = 0;
     config.channel = 3;
     config.bootloader_random = false;
     config.key_length = LORA_KEY_LENGTH;
-    config.lora = this->_lora;
-    config.pre_shared_key = (uint8_t*)LORA_PRESHARED_KEY;
+    config.pre_shared_key = (uint8_t *)LORA_PRESHARED_KEY;
+    config.lora = &(this->_lora);
 
-    if (!this->_protocoll->begin(config))
+    if (!this->_protocoll.begin(config) != E32CP_ERR_SUCCESS)
     {
         OZ_LOGE(this->name().c_str(), "Protocol begin error!! ");
         return;
     }
 
-    if (!this->_protocoll->configure())
-    {
-        OZ_LOGE(this->name().c_str(), "Protocol configuration error!! ");
-        return;
-    }
-
     this->_root_topic = buildTopic(LORA_TOPIC_SEND_STRING) + char(MQTT_TOPIC_SEPARATOR_CHAR) + char(MQTT_TOPIC_CHAR_ANY);
     this->subscribe_topic(this->_root_topic.c_str());
-
 
     xTaskCreate(
         lora_to_mqtt_loop_task,
@@ -143,13 +116,6 @@ lora_to_mqtt::lora_to_mqtt(params_t init) : plugin_base(init)
     this->_espname = SETTING(DB_SETTING_ESPNAME);
 
     this->_initialized = true;
-}
-
-lora_to_mqtt::~lora_to_mqtt()
-{
-    delete this->_lora;
-    delete this->_protocoll;
-    delete this->_serial;
 }
 
 void lora_to_mqtt::_send_response(String Topic, String Payload)
@@ -182,36 +148,24 @@ void lora_to_mqtt::_send_response(String Topic, String Payload)
         }
     }
 
-    bool result = false;
-    uint8_t count = 3;
+    e32cp_errno_t err = this->_protocoll.wake_up_asleep(loramessage, client_address,  E32_SERVER_CHANNEL );
 
-    do
-    {
-        result = this->_protocoll->wake_up_asleep(loramessage, client_address);
-
-        if(!result)
-        {
-            count --;
-            delay(2000);
-        }
-
-    }while (!result && count > 0);
-    
-
-
-    if(result)
+    if (err == E32CP_ERR_SUCCESS)
     {
         OZ_LOGD(this->name().c_str(), "Wake command ok: [%s] to client : [%u] ", loramessage.c_str(), client_address);
     }
     else
     {
-        OZ_LOGE(this->name().c_str(), "Problem occured on sending LoRa");
+        OZ_LOGE(this->name().c_str(), "Problem occured on sending LoRa [%d]",err);
         OZ_LOGE(this->name().c_str(), "Address : %u , Channel: %u", client_address, E32_SERVER_CHANNEL);
     }
 }
 
-void lora_to_mqtt::execute_lora(String lora_message)
+void lora_to_mqtt::execute_lora(e32_receve_struct_t message)
 {
+
+    String lora_message = this->_protocoll.receve_from(message);
+
     if (lora_message.length() == 0)
     {
         OZ_LOGW(this->name().c_str(), "LoRa Recieve empty message!!");
@@ -220,9 +174,9 @@ void lora_to_mqtt::execute_lora(String lora_message)
 
     std::vector<String> message_array = oz_utils::splitString(lora_message.c_str(), LORA_MESSAGE_SEPARATOR_CHAR);
 
-    if (message_array.size() != 2)
+    if (message_array.size() != 2) // Format must be payload&topic
     {
-        OZ_LOGW(this->name().c_str(), "LoRa Recieve Wrong message format [%s]",lora_message );
+        OZ_LOGW(this->name().c_str(), "LoRa Recieve Wrong message format [%s]", lora_message);
         return;
     }
 
@@ -230,7 +184,4 @@ void lora_to_mqtt::execute_lora(String lora_message)
     OZMQTT.send(message_array[1], message_array[0]);
 }
 
-String lora_to_mqtt::receive()
-{
-    return this->_protocoll->recive();
-}
+QueueHandle_t lora_to_mqtt::get_queue() { return this->_lora.get_queue(); }
