@@ -38,11 +38,3 @@ First at all very thanks to Xose Pérez for your public code Espurna (https://gi
 Plug-in represent a new element added to ESP. It can be hardware or software. Some example:  sensors, buttons, led, display, bell ...
 
 
-   
-   Initialization String [#]/[NAME]/[delay (ms)]/[Hardware Serial]
-   
-* **RF_Rx_Switch** ..... 
-   
-   Initialization String [#]/[NAME]/[sensor pin]/[switch pin]/[relay logic 1:0]/[valid key]
-  
-* **MORE PLUG-IN COMING SOON....**
