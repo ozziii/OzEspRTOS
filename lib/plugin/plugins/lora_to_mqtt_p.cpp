@@ -56,31 +56,82 @@ lora_to_mqtt::lora_to_mqtt(params_t init) : plugin_base(init)
     uint8_t tx = this->get_int_parameter(LORATOMQTT_STR_TX);
     uint8_t rx = this->get_int_parameter(LORATOMQTT_STR_RX);
 
-    if (GPIO_IS_VALID_GPIO(tx) && GPIO_IS_VALID_GPIO(rx))
-    {
-        e32_pin_t pin;
-        pin.AUX_REVERSE = false;
-        pin.M0 = (gpio_num_t)this->_m0;
-        pin.M1 = (gpio_num_t)this->_m1;
-        pin.AUX = (gpio_num_t)this->_aux;
-        pin.Tx = (gpio_num_t)tx;
-        pin.Rx = (gpio_num_t)rx;
-
-        OZ_LOGI(this->name().c_str(), "Set Pin Tx:%u Rx:%u", tx, rx);
-
-        auto err = this->_lora.begin(this->_uart_number, pin);
-
-        if (err != E32_ERR_SUCCESS)
-            OZ_LOGW(this->name().c_str(), "E32 begin error");
-        return;
-    }
-    else
+    if (!GPIO_IS_VALID_GPIO(tx) || !GPIO_IS_VALID_GPIO(rx))
     {
         OZ_LOGW(this->name().c_str(), "No Tx and Rx pin valid");
         return;
     }
 
-    e32cp protocoll;
+    e32_pin_t pin;
+    pin.AUX_REVERSE = false;
+    pin.M0 = (gpio_num_t)this->_m0;
+    pin.M1 = (gpio_num_t)this->_m1;
+    pin.AUX = (gpio_num_t)this->_aux;
+    pin.Tx = (gpio_num_t)tx;
+    pin.Rx = (gpio_num_t)rx;
+
+    OZ_LOGI(this->name().c_str(), "Set Pin Tx:%u Rx:%u", tx, rx);
+
+    auto err = this->_lora.begin(this->_uart_number, pin);
+
+    if (err != E32_ERR_SUCCESS)
+    {
+        OZ_LOGW(this->name().c_str(), "E32 begin error");
+        return;
+    }
+
+    e32_configuration_t e32_config = this->_lora.get_config();
+
+    if (e32_config.error != E32_ERR_SUCCESS)
+    {
+        OZ_LOGW(this->name().c_str(), "Error get config [%d]", e32_config.error);
+        return;
+    }
+
+    OZ_LOGI(this->name().c_str(), "PARITY[%X] BAUD[%X] AIR[%X] FIXED[%X] IO[%X] WAKE[%X] FEC[%X] PW[%X] ADDL[%X] ADDH[%X] CH[%X]",
+             e32_config.uart_parity,
+             e32_config.uart_baud_rate,
+             e32_config.air_data_rate,
+             e32_config.fixed_mode,
+             e32_config.io_driver_mode,
+             e32_config.wake_up_time,
+             e32_config.fec_enabled,
+             e32_config.transmission_power,
+             e32_config.address_L,
+             e32_config.address_H,
+             e32_config.channel);
+    /*
+        bool must_config = false; // Update config parameter
+
+        if (must_config)
+        {
+            OZ_LOGV(this->name().c_str(),"Update E32 Configuration");
+            e32_config.address_H = 0;
+            e32_config.address_L = 0;
+            e32_config.channel = 3;
+            e32_config.air_data_rate = E32_PARAMETER_AIRATE_24;
+            e32_config.fec_enabled = E32_OPTION_FEC_ON;
+            e32_config.fixed_mode = E32_OPTION_MODE_FIXED;
+            e32_config.io_driver_mode = E32_OPTION_IOMODE_PUSHPULL;
+            e32_config.transmission_power = E32_OPTION_TXPOWER_4;
+            e32_config.uart_baud_rate = E32_PARAMETER_BAUD_9600;
+            e32_config.uart_parity = E32_PARAMETER_8N1;
+            e32_config.wake_up_time = E32_OPTION_WAKEUP_1750;
+
+            e32_errno_t err = this->_lora.set_permanent_config(e32_config);
+
+            if (err != E32_ERR_SUCCESS)
+            {
+                OZ_LOGW(this->name().c_str(), "Error set config [%u]", err);
+                return;
+            }
+            else
+            {
+                OZ_LOGV(this->name().c_str(), "Update success!");
+            }
+        }
+        */
+
     e32cp_config_t config;
     config.address = 0;
     config.channel = 3;
@@ -89,7 +140,7 @@ lora_to_mqtt::lora_to_mqtt(params_t init) : plugin_base(init)
     config.pre_shared_key = (uint8_t *)LORA_PRESHARED_KEY;
     config.lora = &(this->_lora);
 
-    if (!this->_protocoll.begin(config) != E32CP_ERR_SUCCESS)
+    if (this->_protocoll.begin(config) != E32CP_ERR_SUCCESS)
     {
         OZ_LOGE(this->name().c_str(), "Protocol begin error!! ");
         return;
@@ -148,7 +199,7 @@ void lora_to_mqtt::_send_response(String Topic, String Payload)
         }
     }
 
-    e32cp_errno_t err = this->_protocoll.wake_up_asleep(loramessage, client_address,  E32_SERVER_CHANNEL );
+    e32cp_errno_t err = this->_protocoll.wake_up_asleep(loramessage, client_address, E32_SERVER_CHANNEL);
 
     if (err == E32CP_ERR_SUCCESS)
     {
@@ -156,7 +207,7 @@ void lora_to_mqtt::_send_response(String Topic, String Payload)
     }
     else
     {
-        OZ_LOGE(this->name().c_str(), "Problem occured on sending LoRa [%d]",err);
+        OZ_LOGE(this->name().c_str(), "Problem occured on sending LoRa [%d]", err);
         OZ_LOGE(this->name().c_str(), "Address : %u , Channel: %u", client_address, E32_SERVER_CHANNEL);
     }
 }

@@ -1,3 +1,4 @@
+
 #include "bme680_p2.h"
 
 #include "Wire.h"
@@ -48,32 +49,41 @@ bme6802::bme6802(params_t init) : sensor(init)
          10,
          0});
 
-    int sda = this->get_int_parameter(PLUGIN_BASE_STR_SDA);
-    int scl = this->get_int_parameter(PLUGIN_BASE_STR_SCL);
+    if (!i2cIsInit(0))
+    {
+        int sda = this->get_int_parameter(PLUGIN_BASE_STR_SDA);
+        int scl = this->get_int_parameter(PLUGIN_BASE_STR_SCL);
 
-    if (GPIO_IS_VALID_GPIO(sda) && GPIO_IS_VALID_GPIO(scl))
-    {
-        Wire.begin(sda, scl);
-    }
-    else
-    {
-        Wire.begin();
+        if (GPIO_IS_VALID_GPIO(sda) && GPIO_IS_VALID_GPIO(scl))
+        {
+            Wire.begin(sda, scl);
+        }
+        else
+        {
+            Wire.begin();
+        }
     }
 
     this->_sensor = new Bsec();
+
+    // SET TEMPERATURE OFFSET
+    float t_offset = this->get_float_parameter(BME680_STR_TEMP_OFFSET);
+    this->_sensor->setTemperatureOffset(t_offset);
+
     this->_sensor->begin(BME680_I2C_ADDR_SECONDARY, Wire);
 
     this->_checkStatus();
     this->_sensor->setConfig(bsec_config_iaq);
 
+    
+    
+
     bsec_virtual_sensor_t sensorList1[3] = {
         BSEC_OUTPUT_RAW_GAS,
         BSEC_OUTPUT_IAQ,
-        BSEC_OUTPUT_STATIC_IAQ
-    };
+        BSEC_OUTPUT_STATIC_IAQ};
 
     this->_sensor->updateSubscription(sensorList1, 3, BSEC_SAMPLE_RATE_ULP);
-
 
     bsec_virtual_sensor_t sensorList2[5] = {
         BSEC_OUTPUT_RAW_TEMPERATURE,
@@ -85,11 +95,11 @@ bme6802::bme6802(params_t init) : sensor(init)
 
     this->_sensor->updateSubscription(sensorList2, 5, BSEC_SAMPLE_RATE_LP);
 
-
     if (!this->_checkStatus())
         return;
 
     OZ_LOGI(this->name().c_str(), " Initialization ok!  Delay: %u ms", this->sensor_delay());
+
     this->_initialized = true;
 
     xTaskCreate(

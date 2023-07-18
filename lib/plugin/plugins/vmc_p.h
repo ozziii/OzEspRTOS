@@ -12,8 +12,11 @@
 *            
 *     Ventilazione Meccanica Controllata 
 *
-*      mqtt message {state,power,delay}
+*      mqtt message {   state,power,delay   }
 *
+*      state in [auto,in,out,off]
+*      power 0 to 100
+*      delay in second
 */
 class vmc_plugin : public plugin_base
 {

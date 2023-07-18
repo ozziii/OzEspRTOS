@@ -10,6 +10,8 @@
 #define LED_PLUGIN_STR_DIMMER_LOGIC "Dimmer_Logic"
 #define LED_PLUGIN_STR_ONOFFPIN "OnOff_Pin"
 #define LED_PLUGIN_STR_ONOFFLOGIC "OnOff_Logic"
+#define LED_PLUGIN_STR_PWM_MAX "PwmMax"
+#define LED_PLUGIN_STR_PWM_MIN "PwmMin"
 
 /******************************************************************************************************************************************
  *
@@ -36,7 +38,10 @@ public:
             {LED_PLUGIN_STR_BLUE, "-1"},
             {LED_PLUGIN_STR_DIMMER_LOGIC, "1"},
             {LED_PLUGIN_STR_ONOFFPIN, "-1"},
-            {LED_PLUGIN_STR_ONOFFLOGIC, "1"}};
+            {LED_PLUGIN_STR_ONOFFLOGIC, "1"},
+            {LED_PLUGIN_STR_PWM_MAX, "1024"},
+            {LED_PLUGIN_STR_PWM_MIN, "0"}
+        };
     }
 
 protected:
@@ -55,6 +60,7 @@ private:
 
     String topic_state;
     String topic_action;
+    
 
     void _publish();
     void _update();

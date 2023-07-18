@@ -23,6 +23,8 @@
 #define DB_SETTING_MQTTUSER "MQTTUSER"
 #define DB_SETTING_MQTTPASS "MQTTPASS"
 
+#define DB_SETTING_ETH "ETHERNET"
+
 #define DB_SETTING_WIFISSID1 "WIFI1SSID"
 #define DB_SETTING_WIFIPASS1 "WIFI1PASS"
 #define DB_SETTING_WIFISSID2 "WIFI2SSID"
@@ -59,14 +61,15 @@ const std::map<String, String> Parameters= {
     {DB_SETTING_ESPNAME,"NoName"},
     {DB_SETTING_WEBUSER,"admin"},
     {DB_SETTING_WEBPASS,"admin"},
-    {DB_SETTING_MQTTIP, "mqtt://ozziii.duckdns.org"},
+    {DB_SETTING_MQTTIP, "mqtt://192.168.1.100"},
     {DB_SETTING_MQTTPORT, "1883"},
     {DB_SETTING_MQTTUSER, "mqtt"},
-    {DB_SETTING_MQTTPASS , "abbcd0ac-7fe8"},
-    {DB_SETTING_WIFISSID1, "lukegeorge"},
-    {DB_SETTING_WIFIPASS1, "microelettronica"},
-    {DB_SETTING_WIFISSID2, "Alice-62361025"},
-    {DB_SETTING_WIFIPASS2, "camillis1991de2000manuelamarialu"},
+    {DB_SETTING_MQTTPASS , ""},
+    {DB_SETTING_ETH, "0"},
+    {DB_SETTING_WIFISSID1, ""},
+    {DB_SETTING_WIFIPASS1, ""},
+    {DB_SETTING_WIFISSID2, ""},
+    {DB_SETTING_WIFIPASS2, ""},
     {DB_SETTING_WIFISSID3, ""},
     {DB_SETTING_WIFIPASS3, ""},
     {DB_SETTING_IP, ""},     //IP ADDRESS

@@ -1,3 +1,4 @@
+
 #include "pzem004t_p.h"
 
 // 0   1       2       3       4            5             6             7
@@ -143,7 +144,7 @@ void pzem004t::_sensor_update()
         this->_values[0].value = this->_sensor_v3->voltage();
         this->_values[1].value = this->_sensor_v3->current();
         this->_values[2].value = this->_sensor_v3->power();
-        this->_values[3].value = this->_sensor_v3->energy();
+        this->_values[3].value = this->_sensor_v3->energy()*1000;
         this->_values[4].value = this->_sensor_v3->pf();
     }
     break;

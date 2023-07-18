@@ -26,12 +26,15 @@ static bool mr_is2_begin(multiroom_mode_t mode, multiroom_parameter *parameter)
     i2s_config_rx.sample_rate = MULTIROOM_SAMPLE_RATE;
     i2s_config_rx.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
     i2s_config_rx.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT;
-    i2s_config_rx.communication_format = I2S_COMM_FORMAT_I2S_MSB;
+    i2s_config_rx.communication_format = I2S_COMM_FORMAT_STAND_I2S;
     i2s_config_rx.dma_buf_count = MULTIROOM_CONFIG_BUFFER_COUNT; // number of buffers, 128 max.
     i2s_config_rx.dma_buf_len = MULTIROOM_CONFIG_BUFFER_LENGHT;  // size of each buffer
     i2s_config_rx.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;       // Interrupt level 1
     i2s_config_rx.tx_desc_auto_clear = true;
     i2s_config_rx.use_apll = false;
+    i2s_config_rx.fixed_mclk = 0;
+    i2s_config_rx.mclk_multiple = I2S_MCLK_MULTIPLE_DEFAULT;
+    i2s_config_rx.bits_per_chan = I2S_BITS_PER_CHAN_DEFAULT;
 
     esp_err_t err = i2s_driver_install(parameter->i2s_port, &i2s_config_rx, 0, NULL);
 
@@ -44,38 +47,45 @@ static bool mr_is2_begin(multiroom_mode_t mode, multiroom_parameter *parameter)
     i2s_pin_config_t pin_config_tx;
     pin_config_tx.bck_io_num = parameter->_bck_pin;
     pin_config_tx.ws_io_num = parameter->_rlc_pin;
+    
 
     if (mode == MULTIROOM_SERVER)
     {
+        pin_config_tx.mck_io_num = I2S_PIN_NO_CHANGE;
         pin_config_tx.data_out_num = I2S_PIN_NO_CHANGE;
         pin_config_tx.data_in_num = parameter->_data_pin;
     }
     else
     {
+        pin_config_tx.mck_io_num = GPIO_NUM_0;
         pin_config_tx.data_out_num = parameter->_data_pin;
         pin_config_tx.data_in_num = I2S_PIN_NO_CHANGE;
     }
 
-    err = i2s_zero_dma_buffer(parameter->i2s_port);
 
-    if (err != ESP_OK)
-    {
-        OZ_LOGV(MRTAG, "Zero dma err: %d", err);
-        return false;
-    }
 
     err = i2s_set_pin(parameter->i2s_port, &pin_config_tx);
-
     if (err != ESP_OK)
     {
         OZ_LOGV(MRTAG, "Set Pin err: %d", err);
         return false;
     }
 
+    err = i2s_zero_dma_buffer(parameter->i2s_port);
+    if (err != ESP_OK)
+    {
+        OZ_LOGV(MRTAG, "Zero dma err: %d", err);
+        return false;
+    }
+
+
+
     if (mode == MULTIROOM_SPEAKER)
     {
-        REG_WRITE(PIN_CTRL, 0xFF0);
         PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
+        WRITE_PERI_REG(PIN_CTRL, 0xFFF0);
+        //REG_WRITE(PIN_CTRL, 0xFF0);
+        //PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
     }
 
     return true;
@@ -357,15 +367,19 @@ static void multiroom_send_task(void *pvParameters)
     if (!mr_is2_begin(MULTIROOM_SERVER, parameter))
     {
         OZ_LOGE(MRTAG, "ERROR initialize i2s");
-        esp_restart();
         vTaskDelete(NULL);
     }
 
-    thread_is_running = true;
-    xQueueReset(parameter->message_handler);
-
+    
     std::list<uint32_t> client;
-    uint16_t *buffer = new uint16_t[MULTIROOM_BUFFER_LENGTH];
+    //uint16_t *buffer = new uint16_t[MULTIROOM_BUFFER_LENGTH];
+    uint16_t *buffer = (uint16_t *)malloc(sizeof(uint16_t)*MULTIROOM_BUFFER_LENGTH);
+    if(buffer == nullptr)
+    {
+        OZ_LOGE(MRTAG, "ERROR allocate bufffer");
+        vTaskDelete(NULL);
+    }
+
     uint8_t init_error_count = 0;
     size_t item_size = 0;
     multiroom_message_t *message;
@@ -374,6 +388,9 @@ static void multiroom_send_task(void *pvParameters)
     struct sockaddr_in recipient;
     recipient.sin_family = AF_INET;
     recipient.sin_port = htons(parameter->port);
+
+    thread_is_running = true;
+    xQueueReset(parameter->message_handler);
 
     for (;;)
     {
@@ -571,8 +588,8 @@ bool oz_multiroom::start(TimerHandle_t start_task, TimerHandle_t stop_task)
     if (thread_is_running)
     {
         xQueueReset(parameter->message_handler);
-        OZ_LOGW(MRTAG, "Task alredy running!!!");
-        return false;
+        OZ_LOGI(MRTAG, "Task alredy running!!!");
+        return true;
     }
 
     // start speaker
@@ -588,13 +605,19 @@ bool oz_multiroom::start(TimerHandle_t start_task, TimerHandle_t stop_task)
 
 bool oz_multiroom::_start_server()
 {
-    xTaskCreate(
+    auto result = xTaskCreate(
         multiroom_send_task,
         "multiroom_send_task",
         MULTIROOM_SEND_TASK_STACK_DEEP * 4,
         (void *)this->parameter,
         MULTIROOM_TASK_PRIORITY,
         &(this->_task_handle));
+
+    if(result != pdPASS)
+    {
+        OZ_LOGW(MRTAG,"Start server error [%u]",result);
+        return false;
+    }
 
     return this->_task_handle != NULL;
 }
@@ -619,8 +642,8 @@ bool oz_multiroom::stop()
 {
     if (!thread_is_running)
     {
-        OZ_LOGW(MRTAG, "Stop Thread error... thread not running");
-        return false;
+        OZ_LOGI(MRTAG, "Stop Thread error... thread not running");
+        return true;
     }
 
     if (this->parameter->message_handler == 0)
@@ -632,7 +655,7 @@ bool oz_multiroom::stop()
     multiroom_message_t *msg = new multiroom_message_t();
     msg->ip = 0;
     msg->cmd = MR_COMMAND_STOP;
-    if (xQueueSend(this->parameter->message_handler, &msg, 10) == pdPASS)
+    if (xQueueSend(this->parameter->message_handler, &msg, 100) == pdPASS)
     {
         return true;
     }

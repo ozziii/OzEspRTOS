@@ -7,12 +7,12 @@
  * ============================= GENERAL CONFIGURATION =========================
  * ===========================================================================*/
 
-#define SW_VERSION "0.9.6.1 Beta"
+#define SW_VERSION "0.10.2.0 alfa"
 
 /*===========================================================================
  * ============================= DEBUG CONFIGURATION =========================
  * ===========================================================================*/
-#define RELESE_VERSION 0
+#define RELESE_VERSION 1
 
 #define OZDEBUG_LOG_LEVEL_NONE (0)
 #define OZDEBUG_LOG_LEVEL_ERROR (1)
@@ -24,7 +24,7 @@
 #if RELESE_VERSION
 #define OZDEBUG_ARDUINO_ESP_LOG_LEVEL CONFIG_ARDUHAL_LOG_DEFAULT_LEVEL
 #define OZDEBUG_ESPIDF_DEBUG_LEVEL 0             // ENABLE INTERNAL SERIAL DEBUG
-#define OZDEBUG_LOG_LEVEL OZDEBUG_LOG_LEVEL_INFO // LOG LEVEL SETTING
+#define OZDEBUG_LOG_LEVEL OZDEBUG_LOG_LEVEL_INFO// LOG LEVEL SETTING
 #else
 #define OZDEBUG_ARDUINO_ESP_LOG_LEVEL CONFIG_ARDUHAL_LOG_DEFAULT_LEVEL
 #define OZDEBUG_ESPIDF_DEBUG_LEVEL 5                // ENABLE INTERNAL SERIAL DEBUG
@@ -42,7 +42,7 @@
 #endif
 
 #define OZDEBUG_WEB_COLOR 1    // ENABLE WEB COLOR
-#define OZDEBUG_SERIAL_COLOR 1 // ENABLE SERIAL COLOR
+#define OZDEBUG_SERIAL_COLOR 0 // ENABLE SERIAL COLOR
 
 #if OZDEBUG_WEB_SUPPORT
 #define OZDEBUG_WEB_MAX_LIST 30
@@ -86,6 +86,12 @@
  * ============================= WIFI CONFIGURATION ==========================
  * ===========================================================================*/
 
+#define ETH_TYPE_WIFI 0
+#define ETH_TYPE_LAN8720 1
+
+
+
+
 #define WIFI_AP_SSID "ESPWIFI"
 #define WIFI_AP_PASS "ESPWIFIESPWIFIESPWIFI"
 
@@ -107,6 +113,8 @@
 #define MQTT_COMMAND_UPDATE "update"
 #define MQTT_COMMAND_REBOOT "reboot"
 #define MQTT_COMMAND_DISCOVERY "discovery"
+#define MQTT_COMMAND_REQUEST "request"
+#define MQTT_COMMAND_PRESENT "present"
 #define MQTT_COMMAND_ACTION "action"
 #define MQTT_COMMAND_STATE "state"
 #define MQTT_COMMAND_VOLUME "volume"
@@ -115,6 +123,7 @@
 #define MQTT_COMMAND_REVERSE "reverse"
 #define MQTT_COMMAND_STOP "stop"
 
+#define MQTT_SENSOR_LUMINOSITY "luminosity"
 #define MQTT_SENSOR_TEMPERATURE "temperature"
 #define MQTT_SENSOR_HUMIDITY "humidity"
 #define MQTT_SENSOR_PRESSURE "pressure"
@@ -128,6 +137,7 @@
 #define MQTT_SENSOR_ENERGY "energy"
 #define MQTT_SENSOR_VALUE "value"
 #define MQTT_SENSOR_ALIVE "alive"
+#define MQTT_SENSOR_BYTE "byte"
 
 #define TOPIC_BRIGHTNESS "brightness"
 #define TOPIC_RGB "rgb"
@@ -218,7 +228,7 @@
  * =================  PLUG-IN  BISTABLE RELAY  =================================
  * ===========================================================================*/
 
-#define BISTABLE_RELAY_PLUGIN_SIGNAL_DURATION 500 // [ms]
+#define BISTABLE_RELAY_PLUGIN_SIGNAL_DURATION 200 // [ms]
 
 /*===========================================================================
  * =================  PLUG-IN  LED            =================================
@@ -235,20 +245,27 @@
 
 #define BME680_PLUGIN_SENSOR_TIMEOUT 30000
 
+
+/*===========================================================================
+ * =================  TSL2561             =================================
+ * ===========================================================================*/
+
+#define TSL2561_PLUGIN_SENSOR_TIMEOUT 30000
+
 /*===========================================================================
  * =================  PLUG-IN  MULTIROOM SPEAKER    ====================================
  * ===========================================================================*/
 
-#define MULTICAST_PLUGIN_SERVER_STATE_TOPIC "multiroom/server/state"
+#define MULTICAST_PLUGIN_SERVER_STATE_TOPIC "multiroom/server2/state"
 
-#define MULTICAST_PLUGIN_CLIENT_REQEST_TOPIC "multiroom/client/request"
-#define MULTICAST_PLUGIN_CLIENT_READY_TOPIC "multiroom/client/ready"
-#define MULTICAST_PLUGIN_CLIENT_STOP_TOPIC "multiroom/client/stop"
+#define MULTICAST_PLUGIN_CLIENT_REQEST_TOPIC "multiroom/client2/request"
+#define MULTICAST_PLUGIN_CLIENT_READY_TOPIC "multiroom/client2/ready"
+#define MULTICAST_PLUGIN_CLIENT_STOP_TOPIC "multiroom/client2/stop"
 
 #define MULTICAST_PLUGIN_PLAY_MESSAGE "play"
 #define MULTICAST_PLUGIN_STOP_MESSAGE "stop"
 
-#define SPEAKER_PLUGIN_MULTICAST_PORT 1234
+#define SPEAKER_PLUGIN_MULTICAST_PORT 4321
 #define SPEAKER_PLUGIN_LOW_GAIN 0
 #define SPEAKER_PLUGIN_TOP_GAIN 255
 #define SPEAKER_PLUGIN_DEFAULT_GAIN 60
@@ -263,6 +280,19 @@
 #define VMC_STATE_OFF "off"
 
 #define VMC_PAYLOAD_SEPARATOR_CHAR 44
+
+/*===========================================================================================
+ * =================================== BLE TO UDP PLUGIN ====================================
+ * ==========================================================================================*/
+
+
+#define A2DPSINK_ACTION_PLAY "play"
+#define A2DPSINK_ACTION_PAUSE "pause"
+#define A2DPSINK_ACTION_NEXT "next"
+#define A2DPSINK_ACTION_PREV "prev"
+#define A2DPSINK_ACTION_VOLUP "volup"
+#define A2DPSINK_ACTION_VOLDOWN "voldown"
+
 
 /*======================================================================================
  * =================================== LORA TO MQTT  ====================================

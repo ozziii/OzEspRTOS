@@ -48,8 +48,14 @@ led_plugin::led_plugin(params_t init) : plugin_base(init)
 
     bool dimmer_logic = this->get_int_parameter(LED_PLUGIN_STR_DIMMER_LOGIC);
 
-    this->min = dimmer_logic ? PLUGIN_LED_MIN_PWM : PLUGIN_LED_MAX_PWM;
-    this->max = dimmer_logic ? PLUGIN_LED_MAX_PWM : PLUGIN_LED_MIN_PWM;
+    uint16_t pwm_max = this->get_int_parameter(LED_PLUGIN_STR_PWM_MAX);
+    if(pwm_max <= 0) pwm_max == PLUGIN_LED_MAX_PWM;
+    uint16_t pwm_min = this->get_int_parameter(LED_PLUGIN_STR_PWM_MIN);
+    if(pwm_min <= 0) pwm_max == PLUGIN_LED_MIN_PWM;
+    
+
+    this->min = dimmer_logic ? pwm_min : pwm_max;
+    this->max = dimmer_logic ? pwm_max : pwm_min;
 
     this->onoff_pin = this->get_int_parameter(LED_PLUGIN_STR_ONOFFLOGIC);
 

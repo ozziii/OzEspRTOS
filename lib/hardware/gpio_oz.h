@@ -7,16 +7,14 @@
 
 #include "debug_oz.h"
 
+
 #define GPIOZ_MAX_INTERRUPT_SLOT 50           // NOT CHANHGE !!!
 #define GPIOZ_DFAULT_PUMP_DELAY  300
 #define GPIOZ_DEBOUNCING_DELAY   500
 
 
-#define GPIOZ_PUMP_TASK_MEMORY_ALLOCATION     256
+#define GPIOZ_PUMP_TASK_MEMORY_ALLOCATION     1024
 #define GPIOZ_PUMP_TASK_PRIORITY              3
-
-
-
 
 class gpio_oz
 {
@@ -44,12 +42,14 @@ class gpio_oz
     //#####################################   PWM ###################################################
 
     /**
+     * @brief 
      * 
-     * 
-     * 
-     * 
+     * @param Pin 
+     * @param freq 
+     * @param resolution_bits 
+     * @return uint8_t  channel
      */
-    void attach_PWM(uint8_t Pin);
+    uint8_t attach_PWM(uint8_t Pin,double freq = PWM_FREQUENCY, uint8_t resolution_bits = PWM_RESOLUTION);
 
     /**
      * 

@@ -1,15 +1,11 @@
 #include <gpio_oz.h>
-
-#include <setting.h>
-
-static uint32_t gpioz_debouncing_delay = 0;
-
-
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 
 volatile static unsigned long last_trigger_pin00 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_00()
 {
-    if (millis() > last_trigger_pin00 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin00 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin00 = millis();
         GPIOZ.pushInterrupt(0);
@@ -18,7 +14,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_00()
 volatile static unsigned long last_trigger_pin01 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_01()
 {
-    if (millis() > last_trigger_pin01 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin01 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin01 = millis();
         GPIOZ.pushInterrupt(1);
@@ -27,7 +23,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_01()
 volatile static unsigned long last_trigger_pin02 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_02()
 {
-    if (millis() > last_trigger_pin02 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin02 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin02 = millis();
         GPIOZ.pushInterrupt(2);
@@ -36,7 +32,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_02()
 volatile static unsigned long last_trigger_pin03 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_03()
 {
-    if (millis() > last_trigger_pin03 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin03 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin03 = millis();
         GPIOZ.pushInterrupt(3);
@@ -45,7 +41,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_03()
 volatile static unsigned long last_trigger_pin04 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_04()
 {
-    if (millis() > last_trigger_pin04 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin04 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin04 = millis();
         GPIOZ.pushInterrupt(4);
@@ -54,7 +50,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_04()
 volatile static unsigned long last_trigger_pin05 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_05()
 {
-    if (millis() > last_trigger_pin05 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin05 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin05 = millis();
         GPIOZ.pushInterrupt(5);
@@ -63,7 +59,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_05()
 volatile static unsigned long last_trigger_pin06 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_06()
 {
-    if (millis() > last_trigger_pin06 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin06 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin06 = millis();
         GPIOZ.pushInterrupt(6);
@@ -72,7 +68,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_06()
 volatile static unsigned long last_trigger_pin07 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_07()
 {
-    if (millis() > last_trigger_pin07 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin07 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin07 = millis();
         GPIOZ.pushInterrupt(7);
@@ -81,7 +77,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_07()
 volatile static unsigned long last_trigger_pin08 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_08()
 {
-    if (millis() > last_trigger_pin08 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin08 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin08 = millis();
         GPIOZ.pushInterrupt(8);
@@ -90,7 +86,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_08()
 volatile static unsigned long last_trigger_pin09 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_09()
 {
-    if (millis() > last_trigger_pin09 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin09 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin09 = millis();
         GPIOZ.pushInterrupt(9);
@@ -99,7 +95,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_09()
 volatile static unsigned long last_trigger_pin10 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_10()
 {
-    if (millis() > last_trigger_pin10 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin10 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin10 = millis();
         GPIOZ.pushInterrupt(10);
@@ -108,7 +104,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_10()
 volatile static unsigned long last_trigger_pin11 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_11()
 {
-    if (millis() > last_trigger_pin11 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin11 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin11 = millis();
         GPIOZ.pushInterrupt(11);
@@ -117,7 +113,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_11()
 volatile static unsigned long last_trigger_pin12 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_12()
 {
-    if (millis() > last_trigger_pin12 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin12 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin12 = millis();
         GPIOZ.pushInterrupt(12);
@@ -126,7 +122,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_12()
 volatile static unsigned long last_trigger_pin13 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_13()
 {
-    if (millis() > last_trigger_pin13 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin13 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin13 = millis();
         GPIOZ.pushInterrupt(13);
@@ -135,7 +131,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_13()
 volatile static unsigned long last_trigger_pin14 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_14()
 {
-    if (millis() > last_trigger_pin14 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin14 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin14 = millis();
         GPIOZ.pushInterrupt(14);
@@ -144,7 +140,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_14()
 volatile static unsigned long last_trigger_pin15 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_15()
 {
-    if (millis() > last_trigger_pin15 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin15 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin15 = millis();
         GPIOZ.pushInterrupt(15);
@@ -153,7 +149,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_15()
 volatile static unsigned long last_trigger_pin16 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_16()
 {
-    if (millis() > last_trigger_pin16 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin16 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin16 = millis();
         GPIOZ.pushInterrupt(16);
@@ -162,7 +158,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_16()
 volatile static unsigned long last_trigger_pin17 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_17()
 {
-    if (millis() > last_trigger_pin17 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin17 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin17 = millis();
         GPIOZ.pushInterrupt(17);
@@ -171,7 +167,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_17()
 volatile static unsigned long last_trigger_pin18 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_18()
 {
-    if (millis() > last_trigger_pin18 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin18 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin18 = millis();
         GPIOZ.pushInterrupt(18);
@@ -180,7 +176,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_18()
 volatile static unsigned long last_trigger_pin19 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_19()
 {
-    if (millis() > last_trigger_pin19 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin19 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin19 = millis();
         GPIOZ.pushInterrupt(19);
@@ -189,7 +185,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_19()
 volatile static unsigned long last_trigger_pin21 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_21()
 {
-    if (millis() > last_trigger_pin21 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin21 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin21 = millis();
         GPIOZ.pushInterrupt(21);
@@ -198,7 +194,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_21()
 volatile static unsigned long last_trigger_pin22 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_22()
 {
-    if (millis() > last_trigger_pin22 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin22 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin22 = millis();
         GPIOZ.pushInterrupt(22);
@@ -207,7 +203,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_22()
 volatile static unsigned long last_trigger_pin23 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_23()
 {
-    if (millis() > last_trigger_pin23 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin23 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin23 = millis();
         GPIOZ.pushInterrupt(23);
@@ -216,7 +212,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_23()
 volatile static unsigned long last_trigger_pin25 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_25()
 {
-    if (millis() > last_trigger_pin25 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin25 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin25 = millis();
         GPIOZ.pushInterrupt(25);
@@ -225,7 +221,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_25()
 volatile static unsigned long last_trigger_pin26 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_26()
 {
-    if (millis() > last_trigger_pin26 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin26 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin26 = millis();
         GPIOZ.pushInterrupt(26);
@@ -234,7 +230,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_26()
 volatile static unsigned long last_trigger_pin27 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_27()
 {
-    if (millis() > last_trigger_pin27 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin27 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin27 = millis();
         GPIOZ.pushInterrupt(27);
@@ -243,7 +239,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_27()
 volatile static unsigned long last_trigger_pin32 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_32()
 {
-    if (millis() > last_trigger_pin32 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin32 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin32 = millis();
         GPIOZ.pushInterrupt(32);
@@ -252,7 +248,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_32()
 volatile static unsigned long last_trigger_pin33 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_33()
 {
-    if (millis() > last_trigger_pin33 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin33 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin33 = millis();
         GPIOZ.pushInterrupt(33);
@@ -261,7 +257,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_33()
 volatile static unsigned long last_trigger_pin34 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_34()
 {
-    if (millis() > last_trigger_pin34 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin34 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin34 = millis();
         GPIOZ.pushInterrupt(34);
@@ -270,7 +266,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_34()
 volatile static unsigned long last_trigger_pin35 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_35()
 {
-    if (millis() > last_trigger_pin35 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin35 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin35 = millis();
         GPIOZ.pushInterrupt(35);
@@ -279,7 +275,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_35()
 volatile static unsigned long last_trigger_pin36 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_36()
 {
-    if (millis() > last_trigger_pin36 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin36 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin36 = millis();
         GPIOZ.pushInterrupt(36);
@@ -288,7 +284,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_36()
 volatile static unsigned long last_trigger_pin37 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_37()
 {
-    if (millis() > last_trigger_pin37 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin37 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin37 = millis();
         GPIOZ.pushInterrupt(37);
@@ -297,7 +293,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_37()
 volatile static unsigned long last_trigger_pin38 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_38()
 {
-    if (millis() > last_trigger_pin38 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin38 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin38 = millis();
         GPIOZ.pushInterrupt(38);
@@ -306,7 +302,7 @@ static void ICACHE_RAM_ATTR OnInterrupt_38()
 volatile static unsigned long last_trigger_pin39 = 0;
 static void ICACHE_RAM_ATTR OnInterrupt_39()
 {
-    if (millis() > last_trigger_pin39 + gpioz_debouncing_delay)
+    if (millis() > last_trigger_pin39 + GPIOZ_DEBOUNCING_DELAY)
     {
         last_trigger_pin39 = millis();
         GPIOZ.pushInterrupt(39);
@@ -324,6 +320,8 @@ static void pump_reset_task(void *Parameter)
     auto parameter = reinterpret_cast<pump_reset_task_parameters *>(Parameter);
     vTaskDelay(pdMS_TO_TICKS(parameter->delay));
     GPIOZ.switch_Pin(parameter->pin);
+    OZ_LOGV("PUMP","SWITCH PIN OFF");
+    vTaskDelete(NULL);
 }
 
 gpio_oz::gpio_oz()
@@ -339,9 +337,16 @@ void gpio_oz::switch_Pin(uint8_t Pin)
 
 void gpio_oz::pump_Pin(uint8_t Pin, unsigned long Delay)
 {
+    bool value = digitalRead(Pin);
+    digitalWrite(Pin, !value);
+    vTaskDelay(pdMS_TO_TICKS(Delay));
+    digitalWrite(Pin,value);
+
+    /*
     pump_reset_task_parameters newParameter = {Pin, Delay};
 
     this->switch_Pin(Pin);
+    OZ_LOGV("PUMP","SWITCH PIN ON");
 
     xTaskCreate(
         pump_reset_task,                   // Function that should be called
@@ -351,14 +356,15 @@ void gpio_oz::pump_Pin(uint8_t Pin, unsigned long Delay)
         GPIOZ_PUMP_TASK_PRIORITY,          // Task priority
         NULL                               // Task handle
     );
+    */
 }
 
-void gpio_oz::attach_PWM(uint8_t Pin)
+uint8_t gpio_oz::attach_PWM(uint8_t Pin,double freq, uint8_t resolution_bits)
 {
     auto it = pwm_pins.find(Pin);
     if (it != pwm_pins.end())
     {
-        return;
+        return it->second;
     }
 
     int channel = -1;
@@ -388,13 +394,16 @@ void gpio_oz::attach_PWM(uint8_t Pin)
     if (channel >= 0)
     {
         pwm_pins.insert({Pin, channel});
-        ledcSetup(channel, PWM_FREQUENCY, PWM_RESOLUTION);
+        ledcSetup(channel, freq, resolution_bits);
         ledcAttachPin(Pin, channel);
+        return channel;
     }
     else
     {
         OZ_LOGE(IOTAG, "All pwm channels occupied");
     }
+
+    return 50;
 }
 
 void gpio_oz::detach_PWM(uint8_t Pin)
@@ -419,24 +428,28 @@ void gpio_oz::pwm_write(uint8_t Pin, uint value)
 void gpio_oz::pushInterrupt(uint8_t pin)
 {
     portENTER_CRITICAL_ISR(&innterrupt_mutex);
-    xQueueSendFromISR(queue, &pin, pdFALSE);
+    BaseType_t xHigherPriorityTaskWoken;
+    xQueueSendFromISR(queue, &pin, &xHigherPriorityTaskWoken);
     portEXIT_CRITICAL_ISR(&innterrupt_mutex);
+
+    if (xHigherPriorityTaskWoken) {
+        portYIELD_FROM_ISR();
+    }
 }
 
 int8_t gpio_oz::getInterrupt()
 {
     uint8_t pin;
-    if (xQueueGenericReceive(queue, &pin, portMAX_DELAY, pdFALSE))
+
+    if (xQueueReceive(queue, &pin, portMAX_DELAY))
         return pin;
     else
         return -1;
+
 }
 
 void gpio_oz::setInterrups(uint8_t pin, int mode)
 {
-    if(gpioz_debouncing_delay==0)
-        gpioz_debouncing_delay = SETTING_I(DB_SETTING_DEBOU);
-
     switch (pin)
     {
     case GPIO_NUM_0:
@@ -551,6 +564,7 @@ void gpio_oz::setTouchInterrups(uint8_t pin, uint16_t threshold)
 {
     switch (pin)
     {
+        
     case T0:
         touchAttachInterrupt(pin, OnInterrupt_04, threshold);
         break;
@@ -560,6 +574,7 @@ void gpio_oz::setTouchInterrups(uint8_t pin, uint16_t threshold)
     case T2:
         touchAttachInterrupt(pin, OnInterrupt_02, threshold);
         break;
+        
     case T3:
         touchAttachInterrupt(pin, OnInterrupt_15, threshold);
         break;
@@ -569,6 +584,7 @@ void gpio_oz::setTouchInterrups(uint8_t pin, uint16_t threshold)
     case T5:
         touchAttachInterrupt(pin, OnInterrupt_12, threshold);
         break;
+    
     case T6:
         touchAttachInterrupt(pin, OnInterrupt_14, threshold);
         break;

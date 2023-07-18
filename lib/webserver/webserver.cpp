@@ -1,4 +1,5 @@
 #include "webserver.h"
+#include <ETH.h>
 
 #include <ESPAsyncWebServer.h>
 #include <Update.h>
@@ -108,7 +109,12 @@ void on_state(AsyncWebServerRequest *request)
 
     JsonObject param01 = params.createNestedObject();
     param01["key"] = "IP";
-    param01["value"] = WiFi.localIP().toString();
+
+    IPAddress ip = WiFi.localIP();
+    if(ip == IPAddress())
+        ip = ETH.localIP();
+
+    param01["value"] = ip.toString();
 
     JsonObject param02 = params.createNestedObject();
     param02["key"] = "Chip Model";

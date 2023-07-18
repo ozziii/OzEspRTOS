@@ -37,7 +37,7 @@ vmc_plugin::vmc_plugin(params_t init) : plugin_base(init)
 
     this->_initialized = true;
 
-    OZ_LOGI(this->name().c_str(), "Initialized ok! Pin [E:%u] [P:%u] [D:%u]", this->_enable_pin, this->_pwm_pin, this->_direction_pin);
+    OZ_LOGI(this->name().c_str(), "Initialized ok! Pin [EN:%u] [PMW:%u] [DIR:%u]", this->_enable_pin, this->_pwm_pin, this->_direction_pin);
 }
 
 void vmc_plugin::_send_response(String Topic, String Message)

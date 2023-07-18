@@ -40,6 +40,10 @@ protected:
     bool _start_server();
     bool _stop_server();
 
+    bool _is_on;
+
+    String _topic_action, _topic_state;
+
     int8_t _enable_pin;
 
     oz_multiroom _mr;

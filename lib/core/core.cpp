@@ -1,4 +1,5 @@
 #include "core.h"
+#include <ETH.h>
 
 #include <esp_task_wdt.h>
 
@@ -22,9 +23,13 @@ static std::vector<plugin_base *> core_plugins;
 
 static String core_topic_general_reboot;
 static String core_topic_general_update;
+
 static String core_topic_personal_reboot;
 static String core_topic_personal_update;
-static String core_topic_personal_discovery;
+
+static String core_topic_request_ip;
+static String core_topic_present_ip;
+
 static String core_topic_available;
 
 //###################### UTILITY ############################################
@@ -102,6 +107,7 @@ void CoreExecuteInterrupt(void *Parameter)
 {
     // if (esp_task_wdt_add(NULL) != ESP_OK)
     // if (esp_task_wdt_delete(NULL) != ESP_OK)
+    delay(200); //delay stabilize input bouncing
 
     core_interrupt_parameter *parameter = reinterpret_cast<core_interrupt_parameter *>(Parameter);
     parameter->plugin->interrupt(parameter->pin);
@@ -127,6 +133,7 @@ void CoreInterruptTask(void *parameter)
             core_interrupt_parameter newParameter;
             newParameter.pin = pin;
             newParameter.plugin = core_plugins[it->second];
+
 
             xTaskCreate_WFH(
                 CoreExecuteInterrupt,      // Function that should be called
@@ -155,13 +162,12 @@ void CoreUpdateTask(void *parameter)
 void CoreRunPluginUpdate()
 {
     OZMQTT.send(core_topic_available, MQTT_PAYLOAD_AVAILABLE);
-    OZMQTT.send(core_topic_personal_discovery, WIFIOZ.getAddress());
 
     for (auto plugin : core_plugins)
     {
         plugin->force_update();
         /*
-                xTaskCreate_WFH(
+                    xTaskCreate_WFH(
                     CoreUpdateTask,            // Function that should be called
                     "CoreUpdateTask",          // Name of the task (for debugging)
                     CORE_PLUGIN_TASK_MEMORY,   // Stack size (bytes)
@@ -175,6 +181,16 @@ void CoreRunPluginUpdate()
 
 void CoreOnMessageCallback(String topic, String message)
 {
+    if (topic.equals(core_topic_request_ip))
+    {
+
+        String address = WIFIOZ.getAddress();
+        if(address.length() == 0 || address == "0.0.0.0" )
+            address = ETH.localIP().toString();
+        OZMQTT.send(core_topic_present_ip, address.c_str());
+        return;
+    }
+
     if (topic.equals(core_topic_general_update) || topic.equals(core_topic_personal_update))
     {
         CoreRunPluginUpdate();
@@ -235,6 +251,7 @@ void CoreOnConnectionCallback()
     OZMQTT.subscribe(core_topic_general_update);
     OZMQTT.subscribe(core_topic_personal_reboot);
     OZMQTT.subscribe(core_topic_personal_update);
+    OZMQTT.subscribe(core_topic_request_ip);
 
     CoreRunPluginUpdate();
 }
@@ -294,7 +311,8 @@ void core_begin()
     core_topic_general_update = CoreBuildTopic(MQTT_GENERAL_TOPIC, MQTT_COMMAND_UPDATE);
     core_topic_personal_reboot = CoreBuildTopic(SETTING(DB_SETTING_ESPNAME).c_str(), MQTT_COMMAND_REBOOT);
     core_topic_personal_update = CoreBuildTopic(SETTING(DB_SETTING_ESPNAME).c_str(), MQTT_COMMAND_UPDATE);
-    core_topic_personal_discovery = CoreBuildTopic(MQTT_GENERAL_TOPIC, MQTT_COMMAND_DISCOVERY, SETTING(DB_SETTING_ESPNAME).c_str());
+    core_topic_request_ip = CoreBuildTopic(MQTT_GENERAL_TOPIC, MQTT_COMMAND_REQUEST, SETTING(DB_SETTING_ESPNAME).c_str());
+    core_topic_present_ip = CoreBuildTopic(MQTT_GENERAL_TOPIC, MQTT_COMMAND_PRESENT, SETTING(DB_SETTING_ESPNAME).c_str());
 
     if (!isStable)
         return;

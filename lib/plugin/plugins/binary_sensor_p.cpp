@@ -29,8 +29,9 @@ void binary_sensor::_interrupt(uint8_t Pin)
     if (this->_pin != Pin)
         return;
 
-    const char *state = digitalRead(this->_pin) == this->_logic_ON ? MQTT_STATE_ON : MQTT_STATE_OFF;
-    OZMQTT.send(this->_topic_state.c_str(), state);
+    this->_force_update();
+    //const char *state = digitalRead(this->_pin) == this->_logic_ON ? MQTT_STATE_ON : MQTT_STATE_OFF;
+    //OZMQTT.send(this->_topic_state.c_str(), state);
 }
 
 void binary_sensor::_execute_sensor()

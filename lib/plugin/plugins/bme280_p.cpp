@@ -1,16 +1,16 @@
+
 #include "bme280_p.h"
 
 #include "Wire.h"
 
-
 bme280::bme280(params_t init) : sensor(init)
 {
     this->_values.push_back(
-        {MQTT_SENSOR_TEMPERATURE,  // Topic
-         2,                                          // decimal
-         50,                                         // max
-         -20,                                        // min
-         0});                                        // value
+        {MQTT_SENSOR_TEMPERATURE, // Topic
+         2,                       // decimal
+         50,                      // max
+         -20,                     // min
+         0});                     // value
 
     this->_values.push_back(
         {MQTT_SENSOR_HUMIDITY,
@@ -25,29 +25,32 @@ bme280::bme280(params_t init) : sensor(init)
          1200,
          10,
          0});
-    
+
     this->_sensor = new BME280<>();
 
-    uint16_t sda = this->get_int_parameter(PLUGIN_BASE_STR_SDA);
-    uint16_t scl = this->get_int_parameter(PLUGIN_BASE_STR_SCL);
-
-    if (GPIO_IS_VALID_GPIO(sda) && GPIO_IS_VALID_GPIO(scl))
+    if (!i2cIsInit(0))
     {
-        Wire.begin(sda,scl);
-    }
-    else
-    {
-        Wire.begin();
-    }
+        uint16_t sda = this->get_int_parameter(PLUGIN_BASE_STR_SDA);
+        uint16_t scl = this->get_int_parameter(PLUGIN_BASE_STR_SCL);
 
+        if (GPIO_IS_VALID_GPIO(sda) && GPIO_IS_VALID_GPIO(scl))
+        {
+            Wire.begin(sda, scl);
+        }
+        else
+        {
+            Wire.begin();
+        }
+    }
+    
     if (!this->_sensor->begin())
     {
-        OZ_LOGW(this->name().c_str(),"No sensor found");
+        OZ_LOGW(this->name().c_str(), "No sensor found");
         this->_initialized = false;
-        return ;
+        return;
     }
 
-    OZ_LOGI(this->name().c_str(),"Initialization ok!");
+    OZ_LOGI(this->name().c_str(), "Initialization ok!");
     this->_initialized = true;
 }
 
@@ -55,7 +58,6 @@ bme280::~bme280()
 {
     delete this->_sensor;
 }
-
 
 void bme280::_sensor_update()
 {

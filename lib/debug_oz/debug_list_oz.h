@@ -31,15 +31,15 @@
 #define OZDEBUG_LOG_COLOR_D       OZDEBUG_LOG_COLOR(OZDEBUG_LOG_COLOR_CYAN)
 #define OZDEBUG_LOG_COLOR_V       OZDEBUG_LOG_COLOR(OZDEBUG_LOG_COLOR_GRAY)
 #else
-#define OZDEBUG_LOG_COLOR_E
-#define OZDEBUG_LOG_COLOR_W
-#define OZDEBUG_LOG_COLOR_I
-#define OZDEBUG_LOG_COLOR_D
-#define OZDEBUG_LOG_COLOR_V
-#define OZDEBUG_LOG_RESET_COLOR
+#define OZDEBUG_LOG_COLOR_E  ""
+#define OZDEBUG_LOG_COLOR_W ""
+#define OZDEBUG_LOG_COLOR_I ""
+#define OZDEBUG_LOG_COLOR_D ""
+#define OZDEBUG_LOG_COLOR_V ""
+#define OZDEBUG_LOG_RESET_COLOR ""
 #endif
 
-#if OZDEBUG_SERIAL_COLOR
+#if OZDEBUG_WEB_COLOR
 #define OZDEBUG_WEB_COLOR_E      "<div style='color:red;'>[E]["
 #define OZDEBUG_WEB_COLOR_W      "<div style='color:yellow;'>[W]["
 #define OZDEBUG_WEB_COLOR_I      "<div style='color:#22da26;'>[I]["
@@ -47,29 +47,21 @@
 #define OZDEBUG_WEB_COLOR_V      "<div style='color:gray;'>[V]["
 #define OZDEBUG_WEB_RESET_COLOR  "</div>"
 #else
-#define OZDEBUG_WEB_COLOR_E
-#define OZDEBUG_WEB_COLOR_W
-#define OZDEBUG_WEB_COLOR_I
-#define OZDEBUG_WEB_COLOR_D
-#define OZDEBUG_WEB_COLOR_V
-#define OZDEBUG_WEB_RESET_COLOR
+#define OZDEBUG_WEB_COLOR_E ""
+#define OZDEBUG_WEB_COLOR_W ""
+#define OZDEBUG_WEB_COLOR_I ""
+#define OZDEBUG_WEB_COLOR_D ""
+#define OZDEBUG_WEB_COLOR_V ""
+#define OZDEBUG_WEB_RESET_COLOR ""
 #endif
 
 //############################### END COLOR SECTION #################################
  
-#define OZDEBUG_LOG_FORMAT_E  OZDEBUG_LOG_COLOR_E "[E][%s] %s" OZDEBUG_LOG_RESET_COLOR "\r\n";
-#define OZDEBUG_LOG_FORMAT_W  OZDEBUG_LOG_COLOR_W "[W][%s] %s" OZDEBUG_LOG_RESET_COLOR "\r\n";
-#define OZDEBUG_LOG_FORMAT_I  OZDEBUG_LOG_COLOR_I "[I][%s] %s" OZDEBUG_LOG_RESET_COLOR "\r\n";
-#define OZDEBUG_LOG_FORMAT_D  OZDEBUG_LOG_COLOR_D "[D][%s] %s" OZDEBUG_LOG_RESET_COLOR "\r\n";
-#define OZDEBUG_LOG_FORMAT_V  OZDEBUG_LOG_COLOR_V "[V][%s] %s" OZDEBUG_LOG_RESET_COLOR "\r\n";
-
-
-
 class debug_list_oz
 {
 public:
     void begin();
-    void write(uint8_t level, const char *tag, const char *format, ...);
+    void write(const char *file,const char *function,uint16_t line,uint8_t level,const char *tag,const char *format, ...);
     std::list<String> get();
 private:
     std::list<String> _debugList;

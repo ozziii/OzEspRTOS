@@ -1,10 +1,11 @@
+
 #ifndef BME680_P2_H
 #define BME680_P2_H
 
 #include "bsec.h"
 #include "plugins/sensor_p.h"
 
-
+#define BME680_STR_TEMP_OFFSET "Temp_Offset"
 
 /**
  *            
@@ -28,6 +29,7 @@ public:
             {PLUGIN_BASE_STR_DELAY,"0"},
             {PLUGIN_BASE_STR_SDA,"21"},
             {PLUGIN_BASE_STR_SCL,"22"},
+            {BME680_STR_TEMP_OFFSET,"0"},
         };
     }
 
@@ -36,9 +38,6 @@ public:
 private:
 
     bool _checkStatus();
-
-    
-    bool _sensor_begin();
 
     void _sensor_update() override;
 

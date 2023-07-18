@@ -3,7 +3,7 @@
 analog_read::analog_read(params_t init) : plugin_base(init)
 {
     analogSetAttenuation(ANALOG_READ_PLUGIN_ATTENUATION);
-    analogSetWidth(ANALOG_READ_PLUGIN_RESOLUTION);
+    //analogSetWidth(ANALOG_READ_PLUGIN_RESOLUTION);
 
     this->_topic_value = this->buildTopic(MQTT_SENSOR_VALUE);
 

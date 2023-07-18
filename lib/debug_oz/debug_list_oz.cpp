@@ -14,7 +14,7 @@ void debug_list_oz::begin()
 #endif
 }
 
-void debug_list_oz::write(uint8_t level, const char *tag, const char *format, ...)
+void debug_list_oz::write(const char *file,const char *function,uint16_t line,uint8_t level,const char *tag,const char *format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -24,30 +24,28 @@ void debug_list_oz::write(uint8_t level, const char *tag, const char *format, ..
     va_end(args);
 
 #if OZDEBUG_SERIAL_SUPPORT
-    const char *log_format;
+    const char *color_open;
     switch (level)
     {
     case OZDEBUG_LOG_LEVEL_ERROR:
-        log_format = OZDEBUG_LOG_FORMAT_E;
+        color_open = OZDEBUG_LOG_COLOR_E; 
         break;
     case OZDEBUG_LOG_LEVEL_WARN:
-        log_format = OZDEBUG_LOG_FORMAT_W;
+        color_open = OZDEBUG_LOG_COLOR_W;
         break;
     case OZDEBUG_LOG_LEVEL_INFO:
-        log_format = OZDEBUG_LOG_FORMAT_I;
+        color_open = OZDEBUG_LOG_COLOR_I;
         break;
     case OZDEBUG_LOG_LEVEL_DEBUG:
-        log_format = OZDEBUG_LOG_FORMAT_D;
+        color_open = OZDEBUG_LOG_COLOR_D;
         break;
     case OZDEBUG_LOG_LEVEL_VERBOSE:
-        log_format = OZDEBUG_LOG_FORMAT_V;
-        break;
-    default:
-        log_format = "[%s]%s\n";
+        color_open = OZDEBUG_LOG_COLOR_V;
         break;
     }
 
-    OZDEBUG_SERIAL_PORT.printf(log_format, tag, buffer);
+
+    OZDEBUG_SERIAL_PORT.printf("%s[%s:%u][%s()] %s %s\n\r",color_open,file,line,function,buffer,OZDEBUG_LOG_RESET_COLOR);
 #endif
 
 #if OZDEBUG_WEB_SUPPORT

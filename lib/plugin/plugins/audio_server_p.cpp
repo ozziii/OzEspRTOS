@@ -1,3 +1,4 @@
+
 #include "audio_server_p.h"
 
 #include "WiFi.h"
@@ -40,9 +41,15 @@ audio_server::audio_server(params_t init) : plugin_base(init)
 
     this->_mr.begin(MULTIROOM_SERVER, SPEAKER_PLUGIN_MULTICAST_PORT, I2S_NUM_0, bck_pin, rlc_pin, din_pin);
 
+    this->_topic_action = this->buildTopic(MQTT_COMMAND_ACTION);
+    this->_topic_state = this->buildTopic(MQTT_COMMAND_STATE);
+
     this->subscribe_topic(MULTICAST_PLUGIN_CLIENT_READY_TOPIC);
     this->subscribe_topic(MULTICAST_PLUGIN_CLIENT_STOP_TOPIC);
     this->subscribe_topic(MULTICAST_PLUGIN_CLIENT_REQEST_TOPIC);
+    this->subscribe_topic(this->_topic_action);
+
+    this->_is_on = true;
 
     this->_initialized = true;
     OZ_LOGI(this->name().c_str(), "Initialized ok! Pin: %u  ", this->_enable_pin);
@@ -51,6 +58,9 @@ audio_server::audio_server(params_t init) : plugin_base(init)
 void audio_server::_interrupt(uint8_t pin)
 {
     if (!OZMQTT.is_connected())
+        return;
+
+    if (!this->_is_on)
         return;
 
     delay(200);
@@ -66,7 +76,13 @@ void audio_server::_interrupt(uint8_t pin)
 
 void audio_server::_force_update()
 {
-    // ON CONNECTION Check if blue
+    const char *state = this->_is_on ? MQTT_STATE_ON : MQTT_STATE_OFF;
+    OZMQTT.send(this->_topic_state.c_str(), state);
+
+    if (!this->_is_on)
+        return;
+
+    // ON MQTT CONNECTION Check if blue
     if (!digitalRead(this->_enable_pin))
         return;
 
@@ -107,6 +123,30 @@ void audio_server::_send_response(String Topic, String Message)
     else if (Topic.equals(MULTICAST_PLUGIN_CLIENT_REQEST_TOPIC))
     {
         OZMQTT.send(MULTICAST_PLUGIN_SERVER_STATE_TOPIC, MULTICAST_PLUGIN_PLAY_MESSAGE);
+    }
+    else if (Topic.equals(this->_topic_action))
+    {
+        if (Message.equals(MQTT_STATE_ON))
+        {
+            if (this->_is_on)
+                return;
+            
+            this->_is_on = true;
+
+            if (!digitalRead(this->_enable_pin))
+                return;
+
+            this->_start_server();
+        }
+        else if (Message.equals(MQTT_STATE_OFF))
+        {
+            if (!this->_is_on)
+                return;
+
+            this->_is_on = false;
+
+            this->_stop_server();
+        }
     }
 }
 
