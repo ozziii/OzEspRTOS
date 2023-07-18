@@ -3,7 +3,7 @@
 
 First at all very thanks to Xose Pérez for your public code Espurna (https://github.com/xoseperez/espurna).
 
-## OzEspX 
+## OzEspRTOS 
 
 **OzEspRTOS** is a Firmware for **ESP32** based board. This Firmware provide to interface from hardware to **MQTT** protocol. Hardware is configurable in runtime, with **Plug-In** logic, in a simple **web UI**. Written for **Arduino IDE** and **PlatformIO**.
 
