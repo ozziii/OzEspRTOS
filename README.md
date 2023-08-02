@@ -2,6 +2,9 @@
 
 **OzEspRTOS** is a Firmware for **ESP32** based board. This Firmware provide to interface from hardware to **MQTT** protocol. Hardware is configurable in runtime, with **Plug-In** logic, in a simple **web UI**. Written for **Arduino IDE** and **PlatformIO**.
 
+Compatibilility with Home Assistant by custom componet 
+
+
 ## Features
 
 * Work on ESP32 base board
